@@ -25,6 +25,6 @@ class Story extends Model
 
     public function sections()
     {
-        return $this->hasMany(Section::class);
+        return $this->hasMany(Section::class)->whereNull('parent_id'); // Direct branches of the story
     }
 }

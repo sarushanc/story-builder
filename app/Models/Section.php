@@ -12,8 +12,9 @@ class Section extends Model
     protected $fillable = [
         'story_id',
         'user_id',
+        'parent_id',
         'section_number',
-        'branch_number',
+        'branch_level',
         'content',
         'multimedia',
     ];
@@ -21,6 +22,16 @@ class Section extends Model
     public function story()
     {
         return $this->belongsTo(Story::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Section::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Section::class, 'parent_id');
     }
 
     public function user()
