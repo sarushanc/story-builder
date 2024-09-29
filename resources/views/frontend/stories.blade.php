@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Story Builder</title>
+    <title>Browse Stories</title>
 
     <!-- Bootstrap CSS (CDN) -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Custom Styles -->
     <style>
         .container {
             padding-top: 20px;
@@ -26,13 +25,11 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <!-- Check if the user is authenticated -->
                 @auth
                     <li class="nav-item">
                         <span class="nav-link">Hello, {{ Auth::user()->name }}</span>
                     </li>
                     <li class="nav-item">
-                        <!-- Logout button -->
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-inline">
                             @csrf
                             <button type="submit" class="btn btn-link nav-link">Logout</button>
@@ -43,31 +40,47 @@
         </div>
     </nav>
 
-    <div class="container text-center py-4">
-        <h1>Welcome to Story Builder</h1>
+    <div class="container">
+        <h1 class="text-center">Browse Stories</h1>
 
-        <div class="row mt-4">
-            <!-- New Story Section -->
-            <div class="col-md-6 text-left">
-                <h2>New Story</h2>
-                <p>Combining storytelling and visual aids to enhance your storytelling skills. Strive for excellence.</p>
-                <div class="btn-group" role="group" aria-label="Basic example">
-                    <a href="{{ route('story.create') }}" class="btn btn-primary">Create New Story</a>
+        <div class="text-right mb-4">
+            <a href="{{ route('story.create') }}" class="btn btn-success">Create New Story</a>
+        </div>
+
+        <form method="GET" action="{{ route('stories.index') }}" class="mb-4">
+            <div class="row">
+                <div class="col-md-8">
+                    <input type="text" name="search" class="form-control" placeholder="Search stories..." value="{{ request('search') }}">
+                </div>
+                <div class="col-md-4">
+                    <select name="filter" class="form-control">
+                        <option value="">All Stories</option>
+                        <option value="my" {{ request('filter') == 'my' ? 'selected' : '' }}>My Stories</option>
+                    </select>
                 </div>
             </div>
+            <button type="submit" class="btn btn-primary mt-2">Search</button>
+        </form>
 
-            <!-- Existing Stories Section -->
-            <div class="col-md-6 text-left">
-                <h2>Existing Stories</h2>
-                <p>Engage in reading stories to enhance your creativity, or assist others in completing their narratives to showcase your storytelling skills and share your talent with the world.</p>
-                <a href="{{ route('story.stories') }}" class="btn btn-info">Browse Stories</a>
-            </div>
-
-            <!-- Image Section -->
-            <div class="col-md-12 mt-4">
-                <img src="{{ asset('images/storymobile.png') }}" alt="Example" class="img-fluid rounded">
-            </div>
+        <div class="row">
+            @foreach($stories as $story)
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $story->title }}</h5>
+                            <p class="card-text">{{ Str::limit($story->content, 100) }}</p>
+                            <a href="{{ route('stories.show', $story->id) }}" class="btn btn-info">View</a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
+
+        {{ $stories->links() }} <!-- Pagination links -->
+
+        @if($stories->isEmpty())
+            <p class="text-center">No stories found.</p>
+        @endif
     </div>
 
     <!-- Bootstrap JS (with Popper.js for tooltips and popovers, CDN) -->

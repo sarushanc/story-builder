@@ -62,5 +62,8 @@ Route::middleware('auth')->group(function () {
     })->middleware(AdminMiddleware::class);
 });
 
-Route::get('/story', [FrontendController::class, 'index'])->name('story.index');
+Route::get('/frontend', [FrontendController::class, 'index'])->name('story.index');
+Route::get('/frontend/stories', [FrontendController::class, 'stories'])->name('story.stories');
+Route::get('/frontend/create', [FrontendController::class, 'create'])->name('story.create');
+Route::get('/frontend/store', [FrontendController::class, 'store'])->name('story.store');
 require __DIR__.'/auth.php';

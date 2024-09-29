@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Story Builder</title>
+    <title>Create New Story</title>
 
     <!-- Bootstrap CSS (CDN) -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Custom Styles -->
     <style>
         .container {
             padding-top: 20px;
@@ -26,13 +25,11 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <!-- Check if the user is authenticated -->
                 @auth
                     <li class="nav-item">
                         <span class="nav-link">Hello, {{ Auth::user()->name }}</span>
                     </li>
                     <li class="nav-item">
-                        <!-- Logout button -->
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-inline">
                             @csrf
                             <button type="submit" class="btn btn-link nav-link">Logout</button>
@@ -43,31 +40,46 @@
         </div>
     </nav>
 
-    <div class="container text-center py-4">
-        <h1>Welcome to Story Builder</h1>
+    <div class="container">
+        <h1 class="text-center">Create New Story</h1>
 
-        <div class="row mt-4">
-            <!-- New Story Section -->
-            <div class="col-md-6 text-left">
-                <h2>New Story</h2>
-                <p>Combining storytelling and visual aids to enhance your storytelling skills. Strive for excellence.</p>
-                <div class="btn-group" role="group" aria-label="Basic example">
-                    <a href="{{ route('story.create') }}" class="btn btn-primary">Create New Story</a>
-                </div>
+        <form method="POST" action="{{ route('stories.store') }}">
+            @csrf
+            <input type="hidden" name="user_id" value="{{ Auth::id() }}">
+
+            <div class="form-group">
+                <label for="title">Story Title</label>
+                <input type="text" name="title" id="title" class="form-control" required>
             </div>
 
-            <!-- Existing Stories Section -->
-            <div class="col-md-6 text-left">
-                <h2>Existing Stories</h2>
-                <p>Engage in reading stories to enhance your creativity, or assist others in completing their narratives to showcase your storytelling skills and share your talent with the world.</p>
-                <a href="{{ route('story.stories') }}" class="btn btn-info">Browse Stories</a>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea name="description" id="description" class="form-control" rows="3"></textarea>
             </div>
 
-            <!-- Image Section -->
-            <div class="col-md-12 mt-4">
-                <img src="{{ asset('images/storymobile.png') }}" alt="Example" class="img-fluid rounded">
+            <div class="form-group">
+                <label for="content">Story Content</label>
+                <textarea name="content" id="content" class="form-control" rows="10" required></textarea>
             </div>
-        </div>
+
+            <div class="form-group">
+                <label for="branch_count">Branch Count</label>
+                <input type="number" name="branch_count" id="branch_count" class="form-control" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="section_count">Section Count</label>
+                <input type="number" name="section_count" id="section_count" class="form-control" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="multimedia">Multimedia (optional)</label>
+                <input type="text" name="multimedia" id="multimedia" class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Story</button>
+            <a href="{{ route('story.index') }}" class="btn btn-secondary">Cancel</a>
+        </form>
     </div>
 
     <!-- Bootstrap JS (with Popper.js for tooltips and popovers, CDN) -->
