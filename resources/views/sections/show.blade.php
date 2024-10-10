@@ -50,7 +50,7 @@
             <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="text-lg font-semibold">{{ __('Child Sections') }}</h3>
-                    @if($section->children->isEmpty())
+                    @if($childSections->isEmpty())
                         <p>{{ __('No child sections available for this section.') }}</p>
                     @else
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 mt-4">

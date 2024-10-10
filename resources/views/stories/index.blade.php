@@ -65,7 +65,7 @@
 
                                             <!-- Add Section Button -->
                                             <a href="{{ route('sections.create', $story->id) }}" class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
-                                                {{ __('Sections') }}
+                                                {{ __('View') }}
                                             </a>
 
                                             <!-- Delete Button -->

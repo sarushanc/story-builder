@@ -69,7 +69,7 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ $story->title }}</h5>
                             <p class="card-text">{{ Str::limit($story->content, 100) }}</p>
-                            <a href="{{ route('stories.show', $story->id) }}" class="btn btn-info">View</a>
+                            <a href="{{ route('story.show', $story->id) }}" class="btn btn-info">View</a>
                         </div>
                     </div>
                 </div>

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -15,8 +14,7 @@ class UserController extends Controller
             $users = User::all();
             return view('users.index', compact('users'));
         } catch (\Exception $e) {
-            Log::error('Error fetching users: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Unable to fetch users at the moment.');
+            return back()->with('error', 'Unable to fetch users at the moment: ' . $e->getMessage());
         }
     }
 
@@ -28,8 +26,7 @@ class UserController extends Controller
         try {
             return view('users.create');
         } catch (\Exception $e) {
-            Log::error('Error showing user creation form: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Unable to load the user creation form.');
+            return back()->with('error', 'Unable to load the user creation form: ' . $e->getMessage());
         }
     }
 
@@ -59,8 +56,7 @@ class UserController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            Log::error('Error creating user: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'An error occurred while creating the user.');
+            return back()->with('error', 'An error occurred while creating the user: ' . $e->getMessage());
         }
     }
 
@@ -72,8 +68,7 @@ class UserController extends Controller
         try {
             return view('users.show', compact('user'));
         } catch (\Exception $e) {
-            Log::error('Error displaying user: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Unable to display the user.');
+            return back()->with('error', 'Unable to display the user: ' . $e->getMessage());
         }
     }
 
@@ -85,8 +80,7 @@ class UserController extends Controller
         try {
             return view('users.edit', compact('user'));
         } catch (\Exception $e) {
-            Log::error('Error showing user edit form: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Unable to load the user edit form.');
+            return back()->with('error', 'Unable to load the user edit form: ' . $e->getMessage());
         }
     }
 
@@ -116,8 +110,7 @@ class UserController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            Log::error('Error updating user: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'An error occurred while updating the user.');
+            return back()->with('error', 'An error occurred while updating the user: ' . $e->getMessage());
         }
     }
 
@@ -131,8 +124,7 @@ class UserController extends Controller
 
             return redirect()->route('users.index')->with('success', 'User deleted successfully.');
         } catch (\Exception $e) {
-            Log::error('Error deleting user: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'An error occurred while deleting the user.');
+            return back()->with('error', 'An error occurred while deleting the user: ' . $e->getMessage());
         }
     }
 }

@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update')->middleware(AdminMiddleware::class);
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware(AdminMiddleware::class);
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show')->middleware(AdminMiddleware::class);
+    Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update')->middleware(AdminMiddleware::class);
 
     Route::prefix('stories/{story}')->group(function () {
         Route::get('/branches', [SectionController::class, 'index'])->name('stories.branches');
@@ -54,7 +55,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/sections', [SectionController::class, 'store'])->name('sections.store');
 
         Route::get('/sections/{section}/edit', [SectionController::class, 'edit'])->name('sections.edit');
-        Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update');
 
         Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
         Route::get('/sections/{section}', [SectionController::class, 'show'])->name('sections.show');
@@ -66,4 +66,5 @@ Route::get('/frontend', [FrontendController::class, 'index'])->name('story.index
 Route::get('/frontend/stories', [FrontendController::class, 'stories'])->name('story.stories');
 Route::get('/frontend/create', [FrontendController::class, 'create'])->name('story.create');
 Route::get('/frontend/store', [FrontendController::class, 'store'])->name('story.store');
+Route::get('/frontend/show/{story}', [FrontendController::class, 'show'])->name('story.show');
 require __DIR__.'/auth.php';

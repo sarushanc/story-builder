@@ -5,6 +5,18 @@
         </h2>
     </x-slot>
 
+    @if(session('success'))
+        <div class="alert alert-success" role="alert">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger" role="alert">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -34,8 +46,8 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $story->created_at->format('Y-m-d H:i') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $story->user->name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="{{ route('stories.show', $story->id) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
-                                            <a href="{{ route('stories.edit', $story->id) }}" class="text-indigo-600 hover:text-indigo-900 ml-2">Edit</a>
+                                            <a href="{{ route('sections.create', $story->id) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('View') }}</a>
+                                            <a href="{{ route('stories.edit', $story->id) }}" class="text-indigo-600 hover:text-indigo-900 ml-2">{{ __('Edit') }}</a>
                                         </td>
                                     </tr>
                                 @endforeach

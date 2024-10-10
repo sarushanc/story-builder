@@ -1,7 +1,15 @@
 <x-app-layout>
+    <!-- Header with Breadcrumb -->
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Create Section for: ') . $story->title }}
+            {{ __('Story: ') . $story->title }}
+            @if($parentSection ?? false)
+                <!-- Displaying Hierarchy -->
+                @foreach($parentSection->ancestors as $ancestor)
+                    > {{ $ancestor->branch_level }}.{{ $ancestor->section_number }}
+                @endforeach
+                > {{ $parentSection->branch_level }}.{{ $parentSection->section_number }}
+            @endif
         </h2>
     </x-slot>
 
@@ -9,14 +17,24 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <!-- Create Section Form -->
+                    <h3 class="text-lg font-semibold">{{ __('Story Details') }}</h3>
+
+                    <!-- Story Title and Multimedia -->
+                    <div class="mb-4">
+                        <p><strong>{{ __('Title:') }}</strong> {{ $story->title }}</p>
+                        @if($story->multimedia)
+                            <p><strong>{{ __('Multimedia:') }}</strong>
+                                <a href="{{ $story->multimedia }}" target="_blank" class="text-blue-600 hover:text-blue-900">{{ __('View Multimedia') }}</a>
+                            </p>
+                        @endif
+                    </div>
+
+                    <!-- Form to Create Section -->
                     <form action="{{ route('sections.store', $story->id) }}" method="POST">
                         @csrf
-
-                        <!-- Hidden Parent Section Field -->
                         <input type="hidden" name="parent_id" value="{{ $parent_id ?? '' }}">
 
-                        <!-- Content -->
+                        <!-- Content Input -->
                         <div class="mb-4">
                             <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Content') }}</label>
                             <textarea name="content" id="content" class="mt-1 block w-full rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300" required>{{ old('content') }}</textarea>
@@ -25,7 +43,7 @@
                             @enderror
                         </div>
 
-                        <!-- Multimedia (Optional) -->
+                        <!-- Multimedia Input -->
                         <div class="mb-4">
                             <label for="multimedia" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Multimedia') }}</label>
                             <input type="text" name="multimedia" id="multimedia" value="{{ old('multimedia') }}" class="mt-1 block w-full rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300">
@@ -42,7 +60,7 @@
                 </div>
             </div>
 
-            <!-- Display All Sections -->
+            <!-- Display Sections with Hierarchy -->
             <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="text-lg font-semibold">{{ __('Sections') }}</h3>
@@ -67,42 +85,8 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                                @foreach($story->sections as $section)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
-                                            {{ $section->section_number }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {{ Str::limit($section->content, 50) }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {{ $section->branch_level }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex space-x-4">
-                                                <!-- View Button -->
-                                                <a href="{{ route('sections.show', ['story' => $story->id, 'section' => $section->id]) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
-                                                    {{ __('View') }}
-                                                </a>
-                                                <!-- Show Sections Button -->
-                                                <a href="{{ route('sections.branches', ['story' => $story->id, 'section' => $section->id]) }}" class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
-                                                    {{ __('Show Sections') }}
-                                                </a>
-                                                <!-- Edit Button -->
-                                                <a href="{{ route('sections.edit', ['story' => $story->id, 'section' => $section->id]) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
-                                                    {{ __('Edit') }}
-                                                </a>
-                                                <!-- Delete Button -->
-                                                <form action="{{ route('sections.destroy', ['story' => $story->id, 'section' => $section->id]) }}" method="POST" class="delete-section-form">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="button" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 delete-section">
-                                                        {{ __('Delete') }}
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                @foreach($story->sections->where('parent_id', null) as $section)
+                                    @include('sections.partials.section_row', ['section' => $section, 'level' => 0])
                                 @endforeach
                             </tbody>
                         </table>

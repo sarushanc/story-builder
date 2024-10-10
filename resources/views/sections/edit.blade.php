@@ -10,7 +10,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <!-- Edit Section Form -->
-                    <form action="{{ route('sections.update', ['story' => $story->id, 'section' => $section->id]) }}" method="POST"> <!-- Ensure the story ID is part of the route -->
+                    <form action="{{ route('sections.update', $section->id) }}" method="POST"> <!-- Ensure the story ID is part of the route -->
                         @csrf
                         @method('PUT')
 

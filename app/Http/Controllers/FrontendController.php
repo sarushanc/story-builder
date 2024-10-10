@@ -13,7 +13,7 @@ class FrontendController extends Controller
         try {
             return view('frontend.index');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Unable to fetch this page: ' . $e->getMessage());
+            return back()->with('error', 'Unable to fetch this page: ' . $e->getMessage());
         }
     }
 
@@ -34,7 +34,7 @@ class FrontendController extends Controller
             ->paginate(10);
             return view('frontend.stories', compact('stories', 'search', 'filter'));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Unable to fetch this page: ' . $e->getMessage());
+            return back()->with('error', 'Unable to fetch this page: ' . $e->getMessage());
         }
     }
 
@@ -43,7 +43,7 @@ class FrontendController extends Controller
         try {
             return view('frontend.create');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Unable to fetch this page: ' . $e->getMessage());
+            return back()->with('error', 'Unable to fetch this page: ' . $e->getMessage());
         }
     }
 
@@ -62,5 +62,11 @@ class FrontendController extends Controller
         ]);
 
         return redirect()->route('frontend.create')->with('success', 'Story created successfully!');
+    }
+
+    public function show(Story $story)
+    {
+        $story->load('sections.branches');
+        return view('frontend.show', compact('story'));
     }
 }
