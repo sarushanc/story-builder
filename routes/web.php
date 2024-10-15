@@ -6,13 +6,14 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\NonAdmin;
 use App\Models\Story;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->middleware('guest');
 
 Route::get('/dashboard', function () {
     // Check if the user is authenticated and if they are an admin
@@ -25,7 +26,7 @@ Route::get('/dashboard', function () {
     return redirect()->route('story.index'); // Adjust the route name for the story page
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth', AdminMiddleware::class)->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -37,16 +38,16 @@ Route::middleware('auth')->group(function () {
     Route::get('stories/{story}/edit', [StoryController::class, 'edit'])->name('stories.edit');
     Route::put('stories/{story}', [StoryController::class, 'update'])->name('stories.update');
     Route::delete('stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy');
-    Route::get('/users/{user}/stories', [StoryController::class, 'userStories'])->name('users.stories')->middleware(AdminMiddleware::class);
+    Route::get('/users/{user}/stories', [StoryController::class, 'userStories'])->name('users.stories');
 
-    Route::get('/users', [UserController::class, 'index'])->name('users.index')->middleware(AdminMiddleware::class);
-    Route::get('/users/create', [UserController::class, 'create'])->name('users.create')->middleware(AdminMiddleware::class);
-    Route::post('/users', [UserController::class, 'store'])->name('users.store')->middleware(AdminMiddleware::class);
-    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit')->middleware(AdminMiddleware::class);
-    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update')->middleware(AdminMiddleware::class);
-    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware(AdminMiddleware::class);
-    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show')->middleware(AdminMiddleware::class);
-    Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update')->middleware(AdminMiddleware::class);
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update');
 
     Route::prefix('stories/{story}')->group(function () {
         Route::get('/branches', [SectionController::class, 'index'])->name('stories.branches');
@@ -59,12 +60,16 @@ Route::middleware('auth')->group(function () {
         Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
         Route::get('/sections/{section}', [SectionController::class, 'show'])->name('sections.show');
         Route::get('/sections/{section}/branches', [SectionController::class, 'showBranches'])->name('sections.branches');
-    })->middleware(AdminMiddleware::class);
+    });
 });
 
-Route::get('/frontend', [FrontendController::class, 'index'])->name('story.index');
-Route::get('/frontend/stories', [FrontendController::class, 'stories'])->name('story.stories');
-Route::get('/frontend/create', [FrontendController::class, 'create'])->name('story.create');
-Route::get('/frontend/store', [FrontendController::class, 'store'])->name('story.store');
-Route::get('/frontend/show/{story}', [FrontendController::class, 'show'])->name('story.show');
+Route::middleware(NonAdmin::class)->group(function () {
+    Route::get('/frontend', [FrontendController::class, 'index'])->name('story.index');
+    Route::get('/frontend/stories', [FrontendController::class, 'stories'])->name('story.stories');
+    Route::get('/frontend/create', [FrontendController::class, 'create'])->name('story.create');
+    Route::post('/frontend/store', [FrontendController::class, 'store'])->name('story.store');
+    Route::post('/frontend/section/store', [FrontendController::class, 'sectionStore'])->name('section.store');
+    Route::get('/frontend/show/{story}', [FrontendController::class, 'show'])->name('story.show');
+    Route::post('/frontend/{section}/like', [FrontendController::class, 'like'])->name('section.like');
+    Route::get('/frontend/{id}/download-ebook', [FrontendController::class, 'downloadEbook'])->name('story.downloadEbook');});
 require __DIR__.'/auth.php';

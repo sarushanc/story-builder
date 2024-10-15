@@ -61,9 +61,9 @@ class StoryController extends Controller
 
             return redirect()->route('stories.index')->with('success', 'Story created successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors())->withInput();
+            return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while creating the story: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while creating the story: ' . $e->getMessage());
         }
     }
 
@@ -75,7 +75,7 @@ class StoryController extends Controller
         try {
             return view('stories.show', compact('story'));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Unable to display the story: ' . $e->getMessage());
+            return back()->with('error', 'Unable to display the story: ' . $e->getMessage());
         }
     }
 
@@ -87,7 +87,7 @@ class StoryController extends Controller
         try {
             return view('stories.edit', compact('story'));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Unable to load the edit form: ' . $e->getMessage());
+            return back()->with('error', 'Unable to load the edit form: ' . $e->getMessage());
         }
     }
 
@@ -117,9 +117,9 @@ class StoryController extends Controller
 
             return redirect()->route('stories.index')->with('success', 'Story updated successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors())->withInput();
+            return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while updating the story: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while updating the story: ' . $e->getMessage());
         }
     }
 
@@ -133,7 +133,7 @@ class StoryController extends Controller
 
             return redirect()->route('stories.index')->with('success', 'Story deleted successfully.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while deleting the story: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while deleting the story: ' . $e->getMessage());
         }
     }
 
@@ -144,7 +144,7 @@ class StoryController extends Controller
             $stories = $user->stories; // Assumes you have a 'stories' relationship in User model
             return view('stories.user_stories', compact('user', 'stories'));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Unable to fetch stories for this user: ' . $e->getMessage());
+            return back()->with('error', 'Unable to fetch stories for this user: ' . $e->getMessage());
         }
     }
 }

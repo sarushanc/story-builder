@@ -19,31 +19,10 @@
 </head>
 <body>
     <!-- Navigation Bar with Logout -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Story Builder</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <!-- Check if the user is authenticated -->
-                @auth
-                    <li class="nav-item">
-                        <span class="nav-link">Hello, {{ Auth::user()->name }}</span>
-                    </li>
-                    <li class="nav-item">
-                        <!-- Logout button -->
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-link nav-link">Logout</button>
-                        </form>
-                    </li>
-                @endauth
-            </ul>
-        </div>
-    </nav>
+    @include('frontend.partials.navbar')
 
     <div class="container text-center py-4">
+        @include('frontend.partials.alerts')
         <h1>Welcome to Story Builder</h1>
 
         <div class="row mt-4">
@@ -71,8 +50,15 @@
     </div>
 
     <!-- Bootstrap JS (with Popper.js for tooltips and popovers, CDN) -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    {{-- <script>
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 5000); // 5 seconds
+        });
+    </script> --}}
 </body>
 </html>

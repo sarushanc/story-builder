@@ -54,7 +54,7 @@ class UserController extends Controller
 
             return redirect()->route('users.index')->with('success', 'User created successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors())->withInput();
+            return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred while creating the user: ' . $e->getMessage());
         }
@@ -108,7 +108,7 @@ class UserController extends Controller
 
             return redirect()->route('users.index')->with('success', 'User updated successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors())->withInput();
+            return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred while updating the user: ' . $e->getMessage());
         }

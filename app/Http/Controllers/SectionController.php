@@ -42,16 +42,13 @@ class SectionController extends Controller
                 'multimedia' => 'nullable|string',
             ]);
 
-            $totalSections = $story->sections()->count();
-
-            // Check if the total number of sections exceeds the story's section limit
-            if ($totalSections >= $story->section_count) {
-                return back()->with('error', 'Cannot add more sections. Total section limit for the story reached.');
-            }
-
             $isRoot = $request->parent_id === null;
 
             if ($isRoot) {
+                if ($story->section_count <= 0) {
+                    return back()->with('error', 'Cannot add branches. The section limit has been reached.');
+                }
+
                 $directBranches = $story->branches()->whereNull('parent_id')->count();
 
                 if ($directBranches >= $story->branch_count) {
@@ -68,6 +65,9 @@ class SectionController extends Controller
                     return back()->with('error', 'Parent section not found.');
                 }
 
+                if ($parentSection->section_number >= $story->section_count) {
+                    return back()->with('error', 'Cannot add branches. The section limit has been reached.');
+                }
                 // Count subsections (child sections) under the parent section
                 $parentChildrenCount = $parentSection->branches()->count();
 
@@ -77,7 +77,6 @@ class SectionController extends Controller
                 }
 
                 $branchLevel = $parentSection->branches()->count() + 1;
-                // Determine the section number
                 $sectionNumber = $parentSection->section_number + 1;
             }
 
@@ -94,7 +93,7 @@ class SectionController extends Controller
             // Section::recalculateSections($story);
             return back()->with('success', 'Section created successfully.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Unable to create the section for this story: ' . $e->getMessage());
+            return back()->with('error', 'Unable to create the section for this story: ' . $e->getMessage());
         }
     }
 

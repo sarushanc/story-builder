@@ -67,6 +67,33 @@ class Section extends Model
         return $this->branches()->exists();
     }
 
+    public function getAncestors()
+    {
+        $ancestors = collect([]);
+        $currentSection = $this;
+
+        // Traverse up through parent sections until no parent is found
+        while ($currentSection->parent) {
+            $ancestors->prepend($currentSection->parent); // Add to collection
+            $currentSection = $currentSection->parent;
+        }
+
+        return $ancestors;
+    }
+
+    // Method to get the root parent (main parent of the story)
+    public function getRootParent()
+    {
+        $currentSection = $this;
+
+        // Traverse up to the root (highest level parent)
+        while ($currentSection->parent) {
+            $currentSection = $currentSection->parent;
+        }
+
+        return $currentSection;
+    }
+
     // public static function recalculateSections($story)
     // {
     //     // Get all root-level sections (parent_id = null) for the story
