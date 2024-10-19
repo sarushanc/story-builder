@@ -46,7 +46,6 @@ class StoryController extends Controller
                 'description' => 'nullable|string',
                 'branch_count' => 'required|integer|min:1',
                 'section_count' => 'required|integer|min:1',
-                'multimedia' => 'nullable|string',
             ]);
 
             // Create a new story
@@ -56,7 +55,6 @@ class StoryController extends Controller
                 'description' => $request->description,
                 'branch_count' => $request->branch_count,
                 'section_count' => $request->section_count,
-                'multimedia' => $request->multimedia,
             ]);
 
             return redirect()->route('stories.index')->with('success', 'Story created successfully.');
@@ -103,7 +101,6 @@ class StoryController extends Controller
                 'description' => 'nullable|string',
                 'branch_count' => 'required|integer|min:1',
                 'section_count' => 'required|integer|min:1',
-                'multimedia' => 'nullable|string',
             ]);
 
             // Update the story
@@ -112,7 +109,6 @@ class StoryController extends Controller
                 'description' => $request->description,
                 'branch_count' => $request->branch_count,
                 'section_count' => $request->section_count,
-                'multimedia' => $request->multimedia,
             ]);
 
             return redirect()->route('stories.index')->with('success', 'Story updated successfully.');

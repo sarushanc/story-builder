@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Like;
+use App\Models\Multimedia;
 use App\Models\Section;
 use App\Models\Story;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -53,27 +54,41 @@ class FrontendController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validate the request data
             $request->validate([
                 'user_id' => 'required|exists:users,id',
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 'branch_count' => 'required|integer|min:1',
                 'section_count' => 'required|integer|min:1',
-                'multimedia' => 'nullable|string',
+                'multimedia.*' => 'nullable|file|mimes:jpg,jpeg,png,bmp,gif,svg,mp4,mov,avi,mp3,wav|max:10240',
             ]);
 
             // Create a new story
-            Story::create([
+            $story = Story::create([
                 'user_id' => $request->user_id,
                 'title' => $request->title,
                 'description' => $request->description,
                 'branch_count' => $request->branch_count,
                 'section_count' => $request->section_count,
-                'multimedia' => $request->multimedia,
             ]);
 
-            return redirect()->route('frontend.stories')->with('success', 'Story created successfully.');
+            if ($request->hasFile('multimedia')) {
+                foreach ($request->file('multimedia') as $file) {
+                    // Upload file to a storage (like S3 or local)
+                    $path = $file->store('multimedia', 's3'); // or 'public' for local
+
+                    // Save multimedia information in a separate table
+                    Multimedia::create([
+                        'mediable_id' => $story->id,
+                        'mediable_type' => Story::class,
+                        'file_path' => $path,
+                        'file_type' => $file->getClientMimeType(),
+                        'file_size' => $file->getSize(),
+                    ]);
+                }
+            }
+
+            return redirect()->route('story.stories')->with('success', 'Story created successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
@@ -81,11 +96,10 @@ class FrontendController extends Controller
         }
     }
 
-
-
     public function show(Story $story)
     {
-        $story->load('sections.branches');
+        $story->load('sections.branches', 'multimedias');
+        // dd($story->multimedias);
         return view('frontend.show', compact('story'));
     }
 
@@ -96,7 +110,7 @@ class FrontendController extends Controller
                 'story_id' => 'required|exists:stories,id',
                 'content' => 'required|string',
                 'parent_id' => 'nullable|exists:sections,id',
-                'multimedia' => 'nullable|string',
+                'multimedia.*' => 'nullable|file|mimes:jpg,jpeg,png,bmp,gif,svg,mp4,mov,avi,mp3,wav|max:10240',
             ]);
 
             // Retrieve the story from the request
@@ -143,14 +157,28 @@ class FrontendController extends Controller
             }
 
             // Create the new section (either branch or subsection)
-            $story->sections()->create([
+            $section = $story->sections()->create([
                 'user_id' => Auth::id(),
                 'parent_id' => $request->parent_id,
                 'content' => $request->content,
-                'multimedia' => $request->multimedia,
                 'section_number' => $sectionNumber,
                 'branch_level' => $branchLevel,
             ]);
+
+            if ($request->hasFile('multimedia')) {
+                foreach ($request->file('multimedia') as $file) {
+                    $filePath = $file->store('multimedia', 's3'); // Store file on S3
+                    $fileType = $file->getMimeType(); // Get the file's MIME type
+                    $fileSize = $file->getSize(); // Get the file's size in bytes
+
+                    // Create multimedia record associated with the section
+                    $section->multimedias()->create([
+                        'file_path' => $filePath,
+                        'file_type' => $fileType,
+                        'file_size' => $fileSize,
+                    ]);
+                }
+            }
 
             return back()->with('success', 'Section created successfully.');
         } catch (\Exception $e) {

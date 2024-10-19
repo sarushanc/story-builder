@@ -16,7 +16,6 @@ class Section extends Model
         'section_number',
         'branch_level',
         'content',
-        'multimedia',
     ];
 
     // Relationship to Story
@@ -47,6 +46,11 @@ class Section extends Model
     public function likes()
     {
         return $this->hasMany(Like::class);
+    }
+
+    public function multimedias()
+    {
+        return $this->morphMany(Multimedia::class, 'mediable');
     }
 
     // Check if the section is a root branch (i.e., no parent)

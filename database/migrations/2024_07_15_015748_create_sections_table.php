@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('section_number');
             $table->integer('branch_level');
             $table->text('content');
-            $table->string('multimedia')->nullable();
             $table->timestamps();
         });
     }

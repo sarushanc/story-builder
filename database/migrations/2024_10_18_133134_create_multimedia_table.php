@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stories', function (Blueprint $table) {
+        Schema::create('multimedia', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('title');
-            $table->text('description')->nullable();
-            $table->integer('branch_count');
-            $table->integer('section_count');
+            $table->morphs('mediable'); // for polymorphic relation
+            $table->string('file_path'); // Path to the file
+            $table->string('file_type'); // Type of file: image, video, audio
+            $table->integer('file_size')->nullable(); // Optional, size in KB/MB
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stories');
+        Schema::dropIfExists('multimedia');
     }
 };

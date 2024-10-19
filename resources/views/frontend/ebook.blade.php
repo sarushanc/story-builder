@@ -54,6 +54,23 @@
             margin-bottom: 10px;
         }
 
+        /* Multimedia */
+        .multimedia {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .multimedia img {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #ddd;
+            padding: 5px;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         /* Table of Contents */
         .table-of-contents {
             margin-bottom: 40px;
@@ -102,6 +119,17 @@
                     </p>
                     <!-- Section Content -->
                     <p>{{ $ancestor->content }}</p>
+
+                    <!-- Check and Display Multimedia -->
+                    @if($ancestor->multimedias->isNotEmpty())
+                        @foreach($ancestor->multimedias as $media)
+                            @if(strpos($media->file_type, 'image') !== false)
+                                <div class="multimedia">
+                                    <img src="{{ Storage::disk('s3')->url($media->file_path) }}" alt="Section Image">
+                                </div>
+                            @endif
+                        @endforeach
+                    @endif
                 </div>
             @endforeach
         </div>
@@ -109,7 +137,7 @@
 
     <!-- Most Liked Section -->
     <div class="section">
-        <h2>Conclution</h2>
+        <h2>Conclusion</h2>
         <div class="content">
             <!-- Section Meta -->
             <p class="section-meta">
@@ -117,6 +145,17 @@
             </p>
             <!-- Section Content -->
             <p>{{ $mostLikedSection->content }}</p>
+
+            <!-- Check and Display Multimedia -->
+            @if($mostLikedSection->multimedias->isNotEmpty())
+                @foreach($mostLikedSection->multimedias as $media)
+                    @if(strpos($media->file_type, 'image') !== false)
+                        <div class="multimedia">
+                            <img src="{{ Storage::disk('s3')->url($media->file_path) }}" alt="Section Image">
+                        </div>
+                    @endif
+                @endforeach
+            @endif
         </div>
     </div>
 

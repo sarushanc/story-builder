@@ -24,7 +24,7 @@
         @include('frontend.partials.alerts')
         <h1 class="text-center">Create New Story</h1>
 
-        <form method="POST" action="{{ route('story.store') }}">
+        <form method="POST" action="{{ route('story.store') }}" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="user_id" value="{{ Auth::id() }}">
 
@@ -39,11 +39,6 @@
             </div>
 
             <div class="form-group">
-                <label for="content">Story Content</label>
-                <textarea name="content" id="content" class="form-control" rows="10" required></textarea>
-            </div>
-
-            <div class="form-group">
                 <label for="branch_count">Branch Count</label>
                 <input type="number" name="branch_count" id="branch_count" class="form-control" min="1" required>
             </div>
@@ -54,8 +49,18 @@
             </div>
 
             <div class="form-group">
-                <label for="multimedia">Multimedia (optional)</label>
-                <input type="text" name="multimedia" id="multimedia" class="form-control">
+                <label for="multimedia_1">Multimedia (optional)</label>
+                <input type="file" name="multimedia[]" id="multimedia_1" class="form-control-file">
+            </div>
+
+            <div class="form-group">
+                <label for="multimedia_2">Multimedia (optional)</label>
+                <input type="file" name="multimedia[]" id="multimedia_2" class="form-control-file">
+            </div>
+
+            <div class="form-group">
+                <label for="multimedia_3">Multimedia (optional)</label>
+                <input type="file" name="multimedia[]" id="multimedia_3" class="form-control-file">
             </div>
 
             <button type="submit" class="btn btn-primary">Save Story</button>

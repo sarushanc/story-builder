@@ -15,7 +15,6 @@ class Story extends Model
         'description',
         'branch_count',
         'section_count',
-        'multimedia',
     ];
 
     public function user()
@@ -32,5 +31,10 @@ class Story extends Model
     public function branches()
     {
         return $this->hasMany(Section::class)->whereNull('parent_id');
+    }
+
+    public function multimedias()
+    {
+        return $this->morphMany(Multimedia::class, 'mediable');
     }
 }

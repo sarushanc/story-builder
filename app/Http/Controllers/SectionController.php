@@ -39,7 +39,6 @@ class SectionController extends Controller
             $request->validate([
                 'content' => 'required|string',
                 'parent_id' => 'nullable|exists:sections,id',
-                'multimedia' => 'nullable|string',
             ]);
 
             $isRoot = $request->parent_id === null;
@@ -85,7 +84,6 @@ class SectionController extends Controller
                 'user_id' => Auth::id(),
                 'parent_id' => $request->parent_id,
                 'content' => $request->content,
-                'multimedia' => $request->multimedia,
                 'section_number' => $sectionNumber,
                 'branch_level' => $branchLevel,
             ]);
@@ -115,13 +113,11 @@ class SectionController extends Controller
         $request->validate([
             'content' => 'required|string',
             'parent_id' => 'nullable|exists:sections,id',
-            'multimedia' => 'nullable|string',
         ]);
 
         $section->update([
             'parent_id' => $request->parent_id,
             'content' => $request->content,
-            'multimedia' => $request->multimedia,
         ]);
 
         return back()->with('success', 'Section updated successfully.');
