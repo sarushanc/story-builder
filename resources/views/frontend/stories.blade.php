@@ -11,12 +11,29 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .background-image {
+            /* Use the background image */
+            background-image: url('{{ asset('images/welcomeblank.png') }}');
+            background-size: cover; /* Cover the entire container */
+            background-position: center; /* Center the image */
+            background-repeat: repeat;
+            height: 100vh; /* Full height of the viewport */
+        }
+
         .container {
             padding-top: 20px;
+            background-color: rgba(255, 255, 255, 0.8); /* Light background overlay for text */
+            border-radius: 10px; /* Optional rounded corners */
+            padding: 20px;
         }
     </style>
 </head>
-<body>
+<body class="background-image">
     <!-- Navigation Bar with Logout -->
     @include('frontend.partials.navbar')
 
@@ -28,7 +45,7 @@
             <a href="{{ route('story.create') }}" class="btn btn-success">Create New Story</a>
         </div>
 
-        <form method="GET" action="{{ route('stories.index') }}" class="mb-4">
+        <form method="GET" action="{{ route('story.stories') }}" class="mb-4">
             <div class="row">
                 <div class="col-md-8">
                     <input type="text" name="search" class="form-control" placeholder="Search stories..." value="{{ request('search') }}">

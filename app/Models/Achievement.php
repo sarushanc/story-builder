@@ -11,8 +11,7 @@ class Achievement extends Model
 
     protected $fillable = [
         'user_id',
-        'type',
-        'value',
+        'points',
     ];
 
     public function user()

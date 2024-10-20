@@ -14,15 +14,31 @@
 
     <!-- Custom Styles -->
     <style>
+        /* Set the background image */
+        body {
+            background: url('{{ asset('images/welcome.png') }}') no-repeat center center fixed;
+            background-size: cover;
+            color: white; /* To make the text stand out on a background */
+        }
+
+        /* Container for welcome content */
         .welcome-container {
             padding-top: 60px;
             text-align: center;
+            background-color: rgba(0, 0, 0, 0.5); /* Add semi-transparent background */
+            padding: 40px;
+            border-radius: 10px;
         }
-        .welcome-image {
-            margin-top: 30px;
-        }
+
+        /* Button group styles */
         .welcome-btn-group {
             margin-top: 20px;
+        }
+
+        /* Image styles */
+        .welcome-image img {
+            max-width: 300px;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -35,11 +51,6 @@
         <div class="welcome-btn-group">
             <a href="{{ route('register') }}" class="btn btn-primary">Join Now</a>
             <a href="{{ route('login') }}" class="btn btn-secondary">Log In</a>
-        </div>
-
-        <!-- Welcome Image -->
-        <div class="welcome-image mt-4">
-            <img src="{{ asset('images/storymobile.png') }}" alt="Story Builder" class="img-fluid rounded">
         </div>
     </div>
 

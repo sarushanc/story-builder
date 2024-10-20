@@ -75,7 +75,10 @@ class FrontendController extends Controller
             if ($request->hasFile('multimedia')) {
                 foreach ($request->file('multimedia') as $file) {
                     // Upload file to a storage (like S3 or local)
-                    $path = $file->store('multimedia', 's3'); // or 'public' for local
+                    $path = $file->store('multimedia', [
+                        'disk' => 's3',
+                        'visibility' => 'public',
+                    ]);
 
                     // Save multimedia information in a separate table
                     Multimedia::create([
@@ -99,8 +102,8 @@ class FrontendController extends Controller
     public function show(Story $story)
     {
         $story->load('sections.branches', 'multimedias');
-        // dd($story->multimedias);
-        return view('frontend.show', compact('story'));
+        $hasLikedSections = $story->sections()->whereHas('likes')->exists();
+        return view('frontend.show', compact('story', 'hasLikedSections'));
     }
 
     public function sectionStore(Request $request)
@@ -167,7 +170,10 @@ class FrontendController extends Controller
 
             if ($request->hasFile('multimedia')) {
                 foreach ($request->file('multimedia') as $file) {
-                    $filePath = $file->store('multimedia', 's3'); // Store file on S3
+                    $filePath = $file->store('multimedia', [
+                        'disk' => 's3',
+                        'visibility' => 'public',  
+                    ]);
                     $fileType = $file->getMimeType(); // Get the file's MIME type
                     $fileSize = $file->getSize(); // Get the file's size in bytes
 

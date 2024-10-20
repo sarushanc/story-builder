@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Multimedia;
 use App\Models\Story;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -46,16 +47,36 @@ class StoryController extends Controller
                 'description' => 'nullable|string',
                 'branch_count' => 'required|integer|min:1',
                 'section_count' => 'required|integer|min:1',
+                'multimedia.*' => 'nullable|file|mimes:jpg,jpeg,png,bmp,gif,svg,mp4,mov,avi,mp3,wav|max:10240',
             ]);
 
             // Create a new story
-            Story::create([
+            $story = Story::create([
                 'user_id' => $request->user_id,
                 'title' => $request->title,
                 'description' => $request->description,
                 'branch_count' => $request->branch_count,
                 'section_count' => $request->section_count,
             ]);
+
+            if ($request->hasFile('multimedia')) {
+                foreach ($request->file('multimedia') as $file) {
+                    // Upload file to a storage (like S3 or local)
+                    $path = $file->store('multimedia', [
+                        'disk' => 's3',
+                        'visibility' => 'public',
+                    ]);
+
+                    // Save multimedia information in a separate table
+                    Multimedia::create([
+                        'mediable_id' => $story->id,
+                        'mediable_type' => Story::class,
+                        'file_path' => $path,
+                        'file_type' => $file->getClientMimeType(),
+                        'file_size' => $file->getSize(),
+                    ]);
+                }
+            }
 
             return redirect()->route('stories.index')->with('success', 'Story created successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {

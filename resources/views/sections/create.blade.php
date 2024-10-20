@@ -30,7 +30,7 @@
                     </div>
 
                     <!-- Form to Create Section -->
-                    <form action="{{ route('sections.store', $story->id) }}" method="POST">
+                    <form action="{{ route('sections.store', $story->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="parent_id" value="{{ $parent_id ?? '' }}">
 
@@ -44,12 +44,17 @@
                         </div>
 
                         <!-- Multimedia Input -->
-                        <div class="mb-4">
-                            <label for="multimedia" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Multimedia') }}</label>
-                            <input type="text" name="multimedia" id="multimedia" value="{{ old('multimedia') }}" class="mt-1 block w-full rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300">
-                            @error('multimedia')
-                                <span class="text-sm text-red-600">{{ $message }}</span>
-                            @enderror
+                        <div class="form-group">
+                            <label for="multimedia_1">Multimedia (optional)</label>
+                            <input type="file" name="multimedia[]" id="multimedia_1" class="form-control-file">
+                        </div>
+                        <div class="form-group">
+                            <label for="multimedia_2">Multimedia (optional)</label>
+                            <input type="file" name="multimedia[]" id="multimedia_2" class="form-control-file">
+                        </div>
+                        <div class="form-group">
+                            <label for="multimedia_3">Multimedia (optional)</label>
+                            <input type="file" name="multimedia[]" id="multimedia_3" class="form-control-file">
                         </div>
 
                         <!-- Submit Button -->

@@ -10,13 +10,31 @@
     <!-- Bootstrap CSS (CDN) -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Custom Styles -->
     <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .background-image {
+            /* Use the background image */
+            background-image: url('{{ asset('images/welcomeblank.png') }}');
+            background-size: cover; /* Cover the entire container */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat;
+            height: 100vh; /* Full height of the viewport */
+        }
+
         .container {
             padding-top: 20px;
+            background-color: rgba(255, 255, 255, 0.8); /* Light background overlay for text */
+            border-radius: 10px; /* Optional rounded corners */
+            padding: 20px;
         }
     </style>
 </head>
-<body>
+<body class="background-image">
     <!-- Navigation Bar with Logout -->
     @include('frontend.partials.navbar')
 
@@ -48,19 +66,20 @@
                 <input type="number" name="section_count" id="section_count" class="form-control" min="1" required>
             </div>
 
+            <!-- Multimedia inputs in a row -->
             <div class="form-group">
-                <label for="multimedia_1">Multimedia (optional)</label>
-                <input type="file" name="multimedia[]" id="multimedia_1" class="form-control-file">
-            </div>
-
-            <div class="form-group">
-                <label for="multimedia_2">Multimedia (optional)</label>
-                <input type="file" name="multimedia[]" id="multimedia_2" class="form-control-file">
-            </div>
-
-            <div class="form-group">
-                <label for="multimedia_3">Multimedia (optional)</label>
-                <input type="file" name="multimedia[]" id="multimedia_3" class="form-control-file">
+                <label>Multimedia (optional)</label>
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="file" name="multimedia[]" id="multimedia_1" class="form-control-file">
+                    </div>
+                    <div class="col-md-4">
+                        <input type="file" name="multimedia[]" id="multimedia_2" class="form-control-file">
+                    </div>
+                    <div class="col-md-4">
+                        <input type="file" name="multimedia[]" id="multimedia_3" class="form-control-file">
+                    </div>
+                </div>
             </div>
 
             <button type="submit" class="btn btn-primary">Save Story</button>

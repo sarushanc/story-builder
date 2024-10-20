@@ -12,26 +12,43 @@
             <p>{{ $section->content }}</p>
 
             @if($section->multimedias->isNotEmpty())
-                <div class="section-multimedia mt-3">
-                    <h4>Section Multimedia</h4>
-                    @foreach($section->multimedias as $media)
-                        @if(strpos($media->file_type, 'image') !== false)
-                            <!-- Display image with size and frame -->
-                            <img src="{{ Storage::disk('s3')->url($media->file_path) }}" alt="Section Image" class="img-fluid mb-3" style="width: 100%; max-width: 300px; border: 2px solid #ddd; padding: 5px;">
-                        @elseif(strpos($media->file_type, 'video') !== false)
-                            <!-- Display video with size and frame -->
-                            <video controls class="mb-3" style="width: 100%; max-width: 800px; border: 2px solid #ddd; padding: 5px;">
-                                <source src="{{ Storage::disk('s3')->url($media->file_path) }}" type="{{ $media->file_type }}">
-                                Your browser does not support the video tag.
-                            </video>
-                        @elseif(strpos($media->file_type, 'audio') !== false)
-                            <!-- Display audio with frame -->
-                            <audio controls class="mb-3" style="width: 100%; max-width: 300px; border: 2px solid #ddd; padding: 5px;">
-                                <source src="{{ Storage::disk('s3')->url($media->file_path) }}" type="{{ $media->file_type }}">
-                                Your browser does not support the audio tag.
-                            </audio>
-                        @endif
-                    @endforeach
+                <!-- Button to trigger modal -->
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#multimediaModal-{{ $section->id }}">
+                    View Multimedia
+                </button>
+
+                <!-- Modal structure -->
+                <div class="modal fade" id="multimediaModal-{{ $section->id }}" tabindex="-1" role="dialog" aria-labelledby="multimediaModalLabel-{{ $section->id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="multimediaModalLabel-{{ $section->id }}">Multimedia Content</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @foreach($section->multimedias as $media)
+                                @if(strpos($media->file_type, 'image') !== false)
+                                    <!-- Image -->
+                                    <img src="{{ Storage::url($media->file_path) }}" class="img-fluid mb-3" style="width: 100%; border: 2px solid #ddd; padding: 5px;">
+                                @elseif(strpos($media->file_type, 'video') !== false)
+                                    <!-- Video -->
+                                    <video controls class="mb-3" style="width: 100%; border: 2px solid #ddd; padding: 5px;">
+                                        <source src="{{ Storage::url($media->file_path) }}" type="{{ $media->file_type }}">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                @elseif(strpos($media->file_type, 'audio') !== false)
+                                    <!-- Audio -->
+                                    <audio controls class="mb-3" style="width: 100%; border: 2px solid #ddd; padding: 5px;">
+                                        <source src="{{ Storage::url($media->file_path) }}" type="{{ $media->file_type }}">
+                                        Your browser does not support the audio tag.
+                                    </audio>
+                                @endif
+                            @endforeach
+                        </div>
+                        </div>
+                    </div>
                 </div>
             @endif
 

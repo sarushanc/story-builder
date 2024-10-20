@@ -11,9 +11,6 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        .container {
-            padding-top: 20px;
-        }
         .section-tree {
             margin-left: 20px;
         }
@@ -32,17 +29,41 @@
             color: blue;
             text-decoration: underline;
         }
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .background-image {
+            /* Use the background image */
+            background-image: url('{{ asset('images/welcomeblank.png') }}');
+            background-size: cover; /* Cover the entire container */
+            background-position: center; /* Center the image */
+            background-repeat: repeat;
+            height: 100vh; /* Full height of the viewport */
+        }
+
+        .container {
+            padding-top: 20px;
+            background-color: rgba(255, 255, 255, 0.8); /* Light background overlay for text */
+            border-radius: 10px; /* Optional rounded corners */
+            padding: 20px;
+        }
     </style>
 </head>
-<body>
+<body class="background-image">
     <!-- Navigation Bar -->
     @include('frontend.partials.navbar')
 
     <div class="container">
         @include('frontend.partials.alerts')
 
-        <div class="d-flex justify-content-end">
-            <a href="{{ route('story.downloadEbook', $story->id) }}" class="btn btn-success mt-3">Download Ebook</a>
+        <div class="d-flex justify-content-between">
+            <a href="{{ route('stories.index') }}" class="btn btn-secondary">Back to Stories</a>
+
+            @if($hasLikedSections)
+                <a href="{{ route('story.downloadEbook', $story->id) }}" class="btn btn-success mt-3">Download Ebook</a>
+            @endif
         </div>
 
         <h1 class="text-center">{{ $story->title }}</h1>
@@ -54,24 +75,61 @@
                 <h4>Story Multimedia</h4>
                 @foreach($story->multimedias as $media)
                     @if(strpos($media->file_type, 'image') !== false)
-                        <!-- Display image with size and frame -->
-                        <img src="{{ Storage::url("$media->file_path") }}" alt="Story Image" class="img-fluid mb-3" style="width: 100%; max-width: 300px; border: 2px solid #ddd; padding: 5px;">
+                        <!-- Display thumbnail image -->
+                        <img src="{{ Storage::url($media->file_path) }}" alt="Story Image" class="img-thumbnail mb-3 multimedia-thumbnail" style="width: 100%; max-width: 100px; cursor: pointer;" data-toggle="modal" data-target="#multimediaModal-{{ $media->id }}">
                     @elseif(strpos($media->file_type, 'video') !== false)
-                        <!-- Display video with size and frame -->
-                        <video controls class="mb-3" style="width: 100%; max-width: 800px; border: 2px solid #ddd; padding: 5px;">
-                            <source src="{{ asset($media->file_path) }}" type="{{ $media->file_type }}">
-                            Your browser does not support the video tag.
-                        </video>
+                        <!-- Display video thumbnail -->
+                        <button class="btn btn-info mb-3 multimedia-thumbnail" data-toggle="modal" data-target="#multimediaModal-{{ $media->id }}">
+                            View Video
+                        </button>
                     @elseif(strpos($media->file_type, 'audio') !== false)
-                        <!-- Display audio with frame -->
-                        <audio controls class="mb-3" style="width: 100%; max-width: 300px; border: 2px solid #ddd; padding: 5px;">
-                            <source src="{{ asset($media->file_path) }}" type="{{ $media->file_type }}">
-                            Your browser does not support the audio tag.
-                        </audio>
+                        <!-- Display audio thumbnail -->
+                        <button class="btn btn-info mb-3 multimedia-thumbnail" data-toggle="modal" data-target="#multimediaModal-{{ $media->id }}">
+                            Listen to Audio
+                        </button>
                     @endif
                 @endforeach
             </div>
         @endif
+
+        <!-- Modal Structure for Multimedia -->
+        @foreach($story->multimedias as $media)
+            <div class="modal fade" id="multimediaModal-{{ $media->id }}" tabindex="-1" role="dialog" aria-labelledby="multimediaModalLabel-{{ $media->id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="multimediaModalLabel-{{ $media->id }}">
+                                @if(strpos($media->file_type, 'image') !== false)
+                                    Image
+                                @elseif(strpos($media->file_type, 'video') !== false)
+                                    Video
+                                @elseif(strpos($media->file_type, 'audio') !== false)
+                                    Audio
+                                @endif
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @if(strpos($media->file_type, 'image') !== false)
+                                <img src="{{ Storage::url($media->file_path) }}" class="img-fluid" alt="Story Image">
+                            @elseif(strpos($media->file_type, 'video') !== false)
+                                <video controls class="w-100">
+                                    <source src="{{ Storage::url($media->file_path) }}" type="{{ $media->file_type }}">
+                                    Your browser does not support the video tag.
+                                </video>
+                            @elseif(strpos($media->file_type, 'audio') !== false)
+                                <audio controls class="w-100">
+                                    <source src="{{ Storage::url($media->file_path) }}" type="{{ $media->file_type }}">
+                                    Your browser does not support the audio tag.
+                                </audio>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
 
         <!-- Branch and Section Limits -->
         <h4>Branch and Section Limits</h4>
@@ -140,26 +198,43 @@
                                 <p>{{ $section->content }}</p>
 
                                 @if($section->multimedias->isNotEmpty())
-                                    <div class="section-multimedia mt-3">
-                                        <h4>Section Multimedia</h4>
-                                        @foreach($section->multimedias as $media)
-                                            @if(strpos($media->file_type, 'image') !== false)
-                                                <!-- Display image with size and frame -->
-                                                <img src="{{ Storage::disk('s3')->url($media->file_path) }}" alt="Section Image" class="img-fluid mb-3" style="width: 100%; max-width: 300px; border: 2px solid #ddd; padding: 5px;">
-                                            @elseif(strpos($media->file_type, 'video') !== false)
-                                                <!-- Display video with size and frame -->
-                                                <video controls class="mb-3" style="width: 100%; max-width: 800px; border: 2px solid #ddd; padding: 5px;">
-                                                    <source src="{{ Storage::disk('s3')->url($media->file_path) }}" type="{{ $media->file_type }}">
-                                                    Your browser does not support the video tag.
-                                                </video>
-                                            @elseif(strpos($media->file_type, 'audio') !== false)
-                                                <!-- Display audio with frame -->
-                                                <audio controls class="mb-3" style="width: 100%; max-width: 300px; border: 2px solid #ddd; padding: 5px;">
-                                                    <source src="{{ Storage::disk('s3')->url($media->file_path) }}" type="{{ $media->file_type }}">
-                                                    Your browser does not support the audio tag.
-                                                </audio>
-                                            @endif
-                                        @endforeach
+                                    <!-- Button to trigger modal -->
+                                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#multimediaModal-{{ $section->id }}">
+                                        View Multimedia
+                                    </button>
+
+                                    <!-- Modal structure -->
+                                    <div class="modal fade" id="multimediaModal-{{ $section->id }}" tabindex="-1" role="dialog" aria-labelledby="multimediaModalLabel-{{ $section->id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="multimediaModalLabel-{{ $section->id }}">Multimedia Content</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                @foreach($section->multimedias as $media)
+                                                    @if(strpos($media->file_type, 'image') !== false)
+                                                        <!-- Image -->
+                                                        <img src="{{ Storage::url($media->file_path) }}" class="img-fluid mb-3" style="width: 100%; border: 2px solid #ddd; padding: 5px;">
+                                                    @elseif(strpos($media->file_type, 'video') !== false)
+                                                        <!-- Video -->
+                                                        <video controls class="mb-3" style="width: 100%; border: 2px solid #ddd; padding: 5px;">
+                                                            <source src="{{ Storage::url($media->file_path) }}" type="{{ $media->file_type }}">
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                    @elseif(strpos($media->file_type, 'audio') !== false)
+                                                        <!-- Audio -->
+                                                        <audio controls class="mb-3" style="width: 100%; border: 2px solid #ddd; padding: 5px;">
+                                                            <source src="{{ Storage::url($media->file_path) }}" type="{{ $media->file_type }}">
+                                                            Your browser does not support the audio tag.
+                                                        </audio>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 @endif
                             </div>
@@ -249,7 +324,7 @@
 
                     <!-- Collapsible form -->
                     <div id="add-section-form" class="collapse mt-2">
-                        <form action="{{ route('section.store') }}" method="POST">
+                        <form action="{{ route('section.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="story_id" value="{{ $story->id }}">
                             <input type="hidden" name="parent_id" value="">
@@ -259,8 +334,18 @@
                                 <textarea name="content" class="form-control" required></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="multimedia">Multimedia</label>
-                                <input type="text" name="multimedia" class="form-control" placeholder="Multimedia URL (optional)">
+                                <label for="multimedia_1">Multimedia (optional)</label>
+                                <input type="file" name="multimedia[]" id="multimedia_1" class="form-control-file">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="multimedia_2">Multimedia (optional)</label>
+                                <input type="file" name="multimedia[]" id="multimedia_2" class="form-control-file">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="multimedia_3">Multimedia (optional)</label>
+                                <input type="file" name="multimedia[]" id="multimedia_3" class="form-control-file">
                             </div>
                             <button type="submit" class="btn btn-success">Create Section</button>
                         </form>

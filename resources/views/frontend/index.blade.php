@@ -12,12 +12,29 @@
 
     <!-- Custom Styles -->
     <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .background-image {
+            /* Use the background image */
+            background-image: url('{{ asset('images/imagination.png') }}');
+            background-size: cover; /* Cover the entire container */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat;
+            height: 100vh; /* Full height of the viewport */
+        }
+
         .container {
             padding-top: 20px;
+            background-color: rgba(255, 255, 255, 0.8); /* Light background overlay for text */
+            border-radius: 10px; /* Optional rounded corners */
+            padding: 20px;
         }
     </style>
 </head>
-<body>
+<body class="background-image">
     <!-- Navigation Bar with Logout -->
     @include('frontend.partials.navbar')
 
@@ -40,11 +57,6 @@
                 <h2>Existing Stories</h2>
                 <p>Engage in reading stories to enhance your creativity, or assist others in completing their narratives to showcase your storytelling skills and share your talent with the world.</p>
                 <a href="{{ route('story.stories') }}" class="btn btn-info">Browse Stories</a>
-            </div>
-
-            <!-- Image Section -->
-            <div class="col-md-12 mt-4">
-                <img src="{{ asset('images/storymobile.png') }}" alt="Example" class="img-fluid rounded">
             </div>
         </div>
     </div>

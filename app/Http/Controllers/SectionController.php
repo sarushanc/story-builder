@@ -39,6 +39,7 @@ class SectionController extends Controller
             $request->validate([
                 'content' => 'required|string',
                 'parent_id' => 'nullable|exists:sections,id',
+                'multimedia.*' => 'nullable|file|mimes:jpg,jpeg,png,bmp,gif,svg,mp4,mov,avi,mp3,wav|max:10240',
             ]);
 
             $isRoot = $request->parent_id === null;
@@ -80,13 +81,31 @@ class SectionController extends Controller
             }
 
             // Create the new section (either branch or subsection)
-            $story->sections()->create([
+            $section = $story->sections()->create([
                 'user_id' => Auth::id(),
                 'parent_id' => $request->parent_id,
                 'content' => $request->content,
                 'section_number' => $sectionNumber,
                 'branch_level' => $branchLevel,
             ]);
+
+            if ($request->hasFile('multimedia')) {
+                foreach ($request->file('multimedia') as $file) {
+                    $filePath = $file->store('multimedia', [
+                        'disk' => 's3',
+                        'visibility' => 'public',
+                    ]);
+                    $fileType = $file->getMimeType(); // Get the file's MIME type
+                    $fileSize = $file->getSize(); // Get the file's size in bytes
+
+                    // Create multimedia record associated with the section
+                    $section->multimedias()->create([
+                        'file_path' => $filePath,
+                        'file_type' => $fileType,
+                        'file_size' => $fileSize,
+                    ]);
+                }
+            }
 
             // Section::recalculateSections($story);
             return back()->with('success', 'Section created successfully.');
