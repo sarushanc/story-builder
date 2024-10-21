@@ -1,65 +1,97 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    @if(session('success'))
-        <div class="alert alert-success" role="alert">
-            {{ session('success') }}
-        </div>
-    @endif
+    <title>Dashboard</title>
 
-    @if(session('error'))
-        <div class="alert alert-danger" role="alert">
-            {{ session('error') }}
-        </div>
-    @endif
+    <!-- Bootstrap CSS (CDN) -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-bold">{{ __('Welcome, ') . Auth::user()->name }}!</h3>
-                    <p>{{ __("You're logged in!") }}</p>
+    <!-- Custom Styles -->
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .background-image {
+            background-image: url('{{ asset('images/imaginationup.png') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+        }
 
-                    <hr class="my-4">
+        .container {
+            padding-top: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body class="background-image">
+    <!-- Navigation Bar with Logout -->
+    @include('frontend.partials.navbar')
 
-                    <h4 class="font-semibold text-lg">{{ __('Recent Stories') }}</h4>
-
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Story Title</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created By</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <!-- Example data rows -->
-                                @foreach($recentStories as $story)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $story->title }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $story->created_at->format('Y-m-d H:i') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $story->user->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="{{ route('sections.create', $story->id) }}" class="text-indigo-600 hover:text-indigo-900">{{ __('View') }}</a>
-                                            <a href="{{ route('stories.edit', $story->id) }}" class="text-indigo-600 hover:text-indigo-900 ml-2">{{ __('Edit') }}</a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-
-                    @if($recentStories->isEmpty())
-                        <p class="mt-4 text-gray-500">{{ __('No stories found.') }}</p>
-                    @endif
-                </div>
+    <div class="container text-center py-4">
+        <!-- Alert Messages -->
+        @if(session('success'))
+            <div class="alert alert-success" role="alert">
+                {{ session('success') }}
             </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <h1>{{ __('Dashboard') }}</h1>
+        <h3 class="text-lg font-bold">{{ __('Welcome, ') . Auth::user()->name }}!</h3>
+        <p>{{ __("You're logged in!") }}</p>
+
+        <hr class="my-4">
+
+        <h4 class="font-semibold text-lg">{{ __('Recent Stories') }}</h4>
+
+        <div class="table-responsive mt-4">
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">{{ __('Story Title') }}</th>
+                        <th scope="col">{{ __('Created At') }}</th>
+                        <th scope="col">{{ __('Created By') }}</th>
+                        <th scope="col">{{ __('Actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($recentStories as $story)
+                        <tr>
+                            <td>{{ $story->title }}</td>
+                            <td>{{ $story->created_at->format('Y-m-d H:i') }}</td>
+                            <td>{{ $story->user->name }}</td>
+                            <td>
+                                <a href="{{ route('story.show', $story->id) }}" class="btn btn-info btn-sm">{{ __('View') }}</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="text-center">{{ __('No stories found.') }}</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
-</x-app-layout>
+
+    <!-- Bootstrap JS (with Popper.js for tooltips and popovers, CDN) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

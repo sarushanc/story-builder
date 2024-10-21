@@ -1,99 +1,124 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Users') }}
-        </h2>
-    </x-slot>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <div class="py-12 flex justify-center">
-        <div class="max-w-full mx-auto sm:px-6 lg:px-8"> <!-- Changed max-w-7xl to max-w-full for full width -->
-            <div class="mb-4 flex justify-end">
-                <a href="{{ route('users.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    {{ __('Create User') }}
-                </a>
-            </div>
+    <title>Users Management</title>
 
-            @if(session('success'))
-                <div class="alert alert-success" role="alert">
-                    {{ session('success') }}
+    <!-- Bootstrap CSS (CDN) -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .background-image {
+            background-image: url('{{ asset('images/welcomeblank.png') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+        }
+
+        .container {
+            padding-top: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body class="background-image">
+    <!-- Navigation Bar with Logout -->
+    @include('frontend.partials.navbar')
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+
+                <!-- 'Create User' button aligned to the right -->
+                <div class="mb-4 text-right">
+                    <a href="{{ route('users.create') }}" class="btn btn-primary">
+                        {{ __('Create User') }}
+                    </a>
                 </div>
-            @endif
 
-            @if(session('error'))
-                <div class="alert alert-danger" role="alert">
-                    {{ session('error') }}
-                </div>
-            @endif
+                <!-- Success message -->
+                @if(session('success'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('success') }}
+                    </div>
+                @endif
 
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100"> <!-- Changed padding from p-12 to p-6 -->
-                    <table class="min-w-full w-full divide-y divide-gray-200 dark:divide-gray-700"> <!-- Added w-full -->
-                        <thead>
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    {{ __('Name') }}
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    {{ __('Email') }}
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    {{ __('Admin') }}
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    {{ __('Actions') }}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                            @forelse($users as $user)
+                <!-- Error message -->
+                @if(session('error'))
+                    <div class="alert alert-danger" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                <!-- Users table -->
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <table class="table table-striped table-bordered">
+                            <thead>
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
-                                        {{ $user->name }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ $user->email }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ $user->isAdmin ? __('Yes') : __('No') }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <div class="flex space-x-4">
-                                            <!-- Edit Button -->
-                                            <a href="{{ route('users.edit', $user->id) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
-                                                {{ __('Edit') }}
-                                            </a>
-
-                                            <!-- Delete Button -->
-                                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="delete-user-form">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 delete-user">
-                                                    {{ __('Delete') }}
-                                                </button>
-                                            </form>
-
-                                            <!-- View Stories Button -->
-                                            <a href="{{ route('users.stories', $user->id) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
-                                                {{ __('View Stories') }}
-                                            </a>
-                                        </div>
-                                    </td>
+                                    <th scope="col">{{ __('Name') }}</th>
+                                    <th scope="col">{{ __('Email') }}</th>
+                                    <th scope="col">{{ __('Admin') }}</th>
+                                    <th scope="col">{{ __('Actions') }}</th>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ __('No users found.') }}
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse($users as $user)
+                                    <tr>
+                                        <td>{{ $user->name }}</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>{{ $user->isAdmin ? __('Yes') : __('No') }}</td>
+                                        <td>
+                                            <div class="d-flex justify-content-start gap-2">
+                                                <!-- Edit Button -->
+                                                <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-warning">
+                                                    {{ __('Edit') }}
+                                                </a>
+
+                                                <!-- Delete Button -->
+                                                <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="delete-user-form">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" class="btn btn-sm btn-danger delete-user">
+                                                        {{ __('Delete') }}
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center">{{ __('No users found.') }}</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap JS (with Popper.js for tooltips and popovers, CDN) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
     <!-- SweetAlert Delete Confirmation -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.querySelectorAll('.delete-user').forEach(button => {
             button.addEventListener('click', function(e) {
@@ -116,4 +141,5 @@
             });
         });
     </script>
-</x-app-layout>
+</body>
+</html>

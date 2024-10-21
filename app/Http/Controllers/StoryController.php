@@ -14,7 +14,8 @@ class StoryController extends Controller
     public function index()
     {
         try {
-            $stories = Story::all();
+            $stories = Story::paginate(10);
+
             return view('stories.index', compact('stories'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Unable to fetch stories at the moment: ' . $e->getMessage());
@@ -143,25 +144,5 @@ class StoryController extends Controller
     /**
      * Remove the specified story from storage.
      */
-    public function destroy(Story $story)
-    {
-        try {
-            $story->delete();
-
-            return redirect()->route('stories.index')->with('success', 'Story deleted successfully.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'An error occurred while deleting the story: ' . $e->getMessage());
-        }
-    }
-
-    public function userStories(User $user)
-    {
-        try {
-            // Fetch stories related to the user
-            $stories = $user->stories; // Assumes you have a 'stories' relationship in User model
-            return view('stories.user_stories', compact('user', 'stories'));
-        } catch (\Exception $e) {
-            return back()->with('error', 'Unable to fetch stories for this user: ' . $e->getMessage());
-        }
-    }
+    
 }

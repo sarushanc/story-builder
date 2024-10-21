@@ -127,4 +127,16 @@ class UserController extends Controller
             return back()->with('error', 'An error occurred while deleting the user: ' . $e->getMessage());
         }
     }
+
+    // public function userStories(User $user)
+    // {
+    //     try {
+    //         $stories = $user->stories()->with(['branches', 'sections'])->paginate(10);
+
+    //         return view('users.user_stories', compact('user', 'stories'));
+    //     } catch (\Exception $e) {
+
+    //         return back()->with('error', 'Unable to fetch stories for this user ' . $user->id . ': ' . $e->getMessage());
+    //     }
+    // }
 }

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Achievement;
 use App\Models\Like;
 use App\Models\Multimedia;
 use App\Models\Section;
 use App\Models\Story;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +28,7 @@ class FrontendController extends Controller
         try {
             $search = $request->get('search');
             $filter = $request->get('filter');
+            $userFilter = $request->get('user_filter'); // New filter for user stories
 
             // Get stories based on the search query and filter
             $stories = Story::when($search, function ($query) use ($search) {
@@ -34,9 +37,16 @@ class FrontendController extends Controller
             ->when($filter === 'my', function ($query) {
                 return $query->where('user_id', Auth::id());
             })
+            ->when($userFilter, function ($query) use ($userFilter) {
+                return $query->where('user_id', $userFilter); // Filter by selected user
+            })
             ->latest()
             ->paginate(10);
-            return view('frontend.stories', compact('stories', 'search', 'filter'));
+
+            // Fetch all users for the user filter dropdown
+            $users = User::all();
+
+            return view('frontend.stories', compact('stories', 'search', 'filter', 'users', 'userFilter'));
         } catch (\Exception $e) {
             return back()->with('error', 'Unable to fetch this page: ' . $e->getMessage());
         }
@@ -172,7 +182,7 @@ class FrontendController extends Controller
                 foreach ($request->file('multimedia') as $file) {
                     $filePath = $file->store('multimedia', [
                         'disk' => 's3',
-                        'visibility' => 'public',  
+                        'visibility' => 'public',
                     ]);
                     $fileType = $file->getMimeType(); // Get the file's MIME type
                     $fileSize = $file->getSize(); // Get the file's size in bytes
@@ -231,5 +241,124 @@ class FrontendController extends Controller
 
         // Download the generated PDF
         return $pdf->download($story->title . '_ebook.pdf');
+    }
+
+    public function destroyStory(Story $story)
+    {
+        try {
+            if (!Auth::user()->isAdmin) {
+                return back()->with('error', 'You do not have permission to delete this story.');
+            }
+            $story->delete();
+
+            return redirect()->route('story.index')->with('success', 'Story deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'An error occurred while deleting the story: ' . $e->getMessage());
+        }
+    }
+
+    public function storyMultimedia(Request $request)
+    {
+        try {
+            $request->validate([
+                'story_id' => 'required|exists:stories,id',
+                'multimedia.*' => 'required|file|mimes:jpg,jpeg,png,bmp,gif,svg,mp4,mov,avi,mp3,wav|max:10240',
+            ]);
+
+            // Check if the story already has 3 multimedia items
+            $existingCount = Multimedia::where('mediable_id', $request->story_id)
+                ->where('mediable_type', Story::class)
+                ->count();
+
+            if ($existingCount >= 3) {
+                return back()->with('error', 'You can only add up to 3 multimedia items.');
+            }
+
+            foreach ($request->file('multimedia') as $file) {
+                if ($existingCount < 3) {
+                    // Store the file
+                    $path = $file->store('multimedia', [
+                        'disk' => 's3',
+                        'visibility' => 'public',
+                    ]);
+
+                    // Save multimedia information in the database
+                    Multimedia::create([
+                        'mediable_id' => $request->story_id,
+                        'mediable_type' => Story::class,
+                        'file_path' => $path,
+                        'file_type' => $file->getClientMimeType(),
+                        'file_size' => $file->getSize(),
+                    ]);
+
+                    $existingCount++; // Increment the count after each successful upload
+                } else {
+                    break; // Stop if the max count is reached
+                }
+            }
+
+            return redirect()->back()->with('success', 'Multimedia added successfully.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return back()->with('error', 'An error occurred while adding multimedia: ' . $e->getMessage());
+        }
+    }
+
+    public function sectionMultimedia(Request $request, $sectionId)
+    {
+        // Find the section by ID
+        $section = Section::findOrFail($sectionId);
+
+        // Check if the authenticated user is either the section creator or an admin
+        if (Auth::id() !== $section->user_id && !Auth::user()->isAdmin) {
+            return redirect()->back()->with('error', 'Unauthorized action.');
+        }
+
+        // Ensure the section doesn't exceed the 3 multimedia limit
+        if ($section->multimedias->count() >= 3) {
+            return redirect()->back()->with('error', 'You can only add up to 3 multimedia items.');
+        }
+
+        // Validate the multimedia files
+        $request->validate([
+            'multimedia.*' => 'required|file|mimes:jpg,jpeg,png,bmp,gif,svg,mp4,mov,avi,mp3,wav|max:20480', // Max file size 20MB
+        ]);
+
+        // Handle the multimedia file uploads
+        if ($request->hasFile('multimedia')) {
+            // Calculate remaining number of multimedia items allowed
+            $remainingSlots = 3 - $section->multimedias->count();
+            $multimediaFiles = array_slice($request->file('multimedia'), 0, $remainingSlots); // Limit the number of files to the available slots
+
+            foreach ($multimediaFiles as $file) {
+                $filePath = $file->store('multimedia', [
+                    'disk' => 's3',
+                    'visibility' => 'public',
+                ]);
+                $fileType = $file->getMimeType(); // Get the file's MIME type
+                $fileSize = $file->getSize();     // Get the file's size in bytes
+
+                // Create multimedia record associated with the section
+                $section->multimedias()->create([
+                    'file_path' => $filePath,
+                    'file_type' => $fileType,
+                    'file_size' => $fileSize,
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Multimedia added successfully!');
+    }
+
+    public function rankings()
+    {
+        // Fetch users along with their points, ordered by points in descending order (highest first)
+        $rankedUsers = Achievement::with('user')
+            ->orderBy('points', 'desc')
+            ->get();
+
+        // Pass the ranked users to the view
+        return view('frontend.rankings', compact('rankedUsers'));
     }
 }

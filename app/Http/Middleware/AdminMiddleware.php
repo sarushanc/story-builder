@@ -20,6 +20,6 @@ class AdminMiddleware
             return $next($request);
         }
 
-        return redirect('/')->with('error', 'Admins cannot access this page.');
+        return redirect()->route('story.index');
     }
 }

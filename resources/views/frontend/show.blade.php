@@ -58,11 +58,9 @@
     <div class="container">
         @include('frontend.partials.alerts')
 
-        <div class="d-flex justify-content-between">
-            <a href="{{ route('stories.index') }}" class="btn btn-secondary">Back to Stories</a>
-
+        <div class="d-flex">
             @if($hasLikedSections)
-                <a href="{{ route('story.downloadEbook', $story->id) }}" class="btn btn-success mt-3">Download Ebook</a>
+                <a href="{{ route('story.downloadEbook', $story->id) }}" class="btn btn-success">Download Ebook</a>
             @endif
         </div>
 
@@ -90,6 +88,28 @@
                     @endif
                 @endforeach
             </div>
+        @endif
+
+        @if(Auth::id() === $story->user_id || Auth::user()->isAdmin)
+            @if($story->multimedias->count() < 3)
+                <div class="add-multimedia mt-3">
+                    <h4>Add Multimedia</h4>
+                    <form action="{{ route('multimedia.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="story_id" value="{{ $story->id }}">
+                        <div class="form-group">
+                            <label for="multimedia">Select Multimedia (Image, Video, Audio)</label>
+                            <input type="file" name="multimedia[]" id="multimedia" class="form-control-file" required>
+                            <small class="form-text text-muted">You can add a maximum of 3 multimedia items.</small>
+                        </div>
+                        <button type="submit" class="btn btn-success">Add Multimedia</button>
+                    </form>
+                </div>
+            @else
+                <div class="alert alert-info mt-3">
+                    <strong>Maximum multimedia limit reached!</strong> You can only add up to 3 multimedia items.
+                </div>
+            @endif
         @endif
 
         <!-- Modal Structure for Multimedia -->
@@ -197,23 +217,23 @@
                             <div class="section-content mt-2">
                                 <p>{{ $section->content }}</p>
 
-                                @if($section->multimedias->isNotEmpty())
-                                    <!-- Button to trigger modal -->
-                                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#multimediaModal-{{ $section->id }}">
-                                        View Multimedia
-                                    </button>
+                                <!-- Button to trigger modal -->
+                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#multimediaModal-{{ $section->id }}">
+                                    View Multimedia
+                                </button>
 
-                                    <!-- Modal structure -->
-                                    <div class="modal fade" id="multimediaModal-{{ $section->id }}" tabindex="-1" role="dialog" aria-labelledby="multimediaModalLabel-{{ $section->id }}" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg" role="document">
-                                            <div class="modal-content">
+                                <!-- Modal structure -->
+                                <div class="modal fade" id="multimediaModal-{{ $section->id }}" tabindex="-1" role="dialog" aria-labelledby="multimediaModalLabel-{{ $section->id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="multimediaModalLabel-{{ $section->id }}">Multimedia Content</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
+                                                    <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
                                             <div class="modal-body">
+                                                <!-- Display Existing Multimedia -->
                                                 @foreach($section->multimedias as $media)
                                                     @if(strpos($media->file_type, 'image') !== false)
                                                         <!-- Image -->
@@ -232,11 +252,33 @@
                                                         </audio>
                                                     @endif
                                                 @endforeach
-                                            </div>
+
+                                                <!-- Add Multimedia Form: Only for Section Creator or Admin -->
+                                                @if(Auth::id() === $section->user_id || Auth::user()->isAdmin)
+                                                    <!-- Ensure the section has fewer than 3 multimedia files -->
+                                                    @if($section->multimedias->count() < 3)
+                                                        <div class="add-multimedia mt-4">
+                                                            <h5>Add Multimedia</h5>
+                                                            <form action="{{ route('section.addMultimedia', $section->id) }}" method="POST" enctype="multipart/form-data">
+                                                                @csrf
+                                                                <div class="form-group">
+                                                                    <label for="multimedia">Select Multimedia (Image, Video, Audio)</label>
+                                                                    <input type="file" name="multimedia[]" id="multimedia" class="form-control-file" required multiple>
+                                                                    <small class="form-text text-muted">You can add a maximum of 3 multimedia items per section.</small>
+                                                                </div>
+                                                                <button type="submit" class="btn btn-success">Upload Multimedia</button>
+                                                            </form>
+                                                        </div>
+                                                    @else
+                                                        <div class="alert alert-info mt-3">
+                                                            <strong>Maximum multimedia limit reached!</strong> You can only add up to 3 multimedia items.
+                                                        </div>
+                                                    @endif
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
-                                @endif
+                                </div>
                             </div>
 
                             <!-- Add Branch Form -->
