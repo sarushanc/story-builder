@@ -12,17 +12,36 @@
 
     <!-- Custom Styles -->
     <style>
-        body {
-            padding-top: 20px;
-            background-color: #f8f9fa;
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
         }
+
+        .background-image {
+            background-image: url('{{ asset('images/imagination.png') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh; /* Ensure the background covers at least full viewport height */
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
         .ranking-table {
             margin-top: 30px;
         }
+
         .ranking-header {
             text-align: center;
             margin-bottom: 20px;
         }
+
         .ranking-badge {
             font-size: 1.5rem;
             color: #fff;
@@ -30,12 +49,20 @@
             padding: 10px;
             border-radius: 5px;
         }
+
+        .no-rankings {
+            text-align: center;
+            font-style: italic;
+            color: #999;
+        }
     </style>
 </head>
-<body>
+<body class="background-image">
+
     <!-- Navigation Bar with Logout -->
     @include('frontend.partials.navbar')
 
+    <!-- Rankings Container -->
     <div class="container">
         <h1 class="ranking-header">User Rankings</h1>
 
@@ -51,7 +78,7 @@
                 @forelse($rankedUsers as $index => $achievement)
                     <tr>
                         <td>
-                            <!-- Display rank -->
+                            <!-- Display rank with a badge -->
                             <span class="ranking-badge">{{ $index + 1 }}</span>
                         </td>
                         <td>
@@ -65,14 +92,14 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3" class="text-center">No rankings available.</td>
+                        <td colspan="3" class="no-rankings">No rankings available.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
-    <!-- Bootstrap JS (with Popper.js for tooltips and popovers, CDN) -->
+    <!-- Bootstrap JS and Popper.js (for tooltips and popovers, CDN) -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>

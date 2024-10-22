@@ -73,7 +73,6 @@ class FrontendController extends Controller
                 'multimedia.*' => 'nullable|file|mimes:jpg,jpeg,png,bmp,gif,svg,mp4,mov,avi,mp3,wav|max:10240',
             ]);
 
-            // Create a new story
             $story = Story::create([
                 'user_id' => $request->user_id,
                 'title' => $request->title,
@@ -84,13 +83,11 @@ class FrontendController extends Controller
 
             if ($request->hasFile('multimedia')) {
                 foreach ($request->file('multimedia') as $file) {
-                    // Upload file to a storage (like S3 or local)
                     $path = $file->store('multimedia', [
                         'disk' => 's3',
                         'visibility' => 'public',
                     ]);
 
-                    // Save multimedia information in a separate table
                     Multimedia::create([
                         'mediable_id' => $story->id,
                         'mediable_type' => Story::class,

@@ -29,5 +29,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
             'isAdmin' => false,
         ]);
+
+        $this->call(StorySeeder::class);
     }
 }
