@@ -73,6 +73,8 @@ Route::get('/dashboard', function () {
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
         Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+
+        Route::get('/contactus', [UserController::class, 'contactUs'])->name('contact.us');
     Route::get('/users/{user}/stories', [UserController::class, 'userStories'])->name('users.stories');
 });
 require __DIR__.'/auth.php';

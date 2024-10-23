@@ -24,6 +24,9 @@
                 <li class="nav-item">
                     <a href="{{ route('rankings') }}" class="nav-link">Achievers</a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('contact.us') }}" class="nav-link">Contact Us</a>
+                </li>
 
                 <!-- Profile dropdown with Profile and Logout options -->
                 <li class="nav-item dropdown">

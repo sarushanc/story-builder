@@ -139,4 +139,13 @@ class UserController extends Controller
     //         return back()->with('error', 'Unable to fetch stories for this user ' . $user->id . ': ' . $e->getMessage());
     //     }
     // }
+
+    public function contactUs()
+    {
+        try {
+            return view('contact-us');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Unable to load the page at the moment: ' . $e->getMessage());
+        }
+    }
 }
