@@ -80,7 +80,7 @@
                             <h5 class="card-title">{{ $story->title }}</h5>
                             <p class="card-text">{{ Str::limit($story->content, 100) }}</p>
                             <a href="{{ route('story.show', $story->id) }}" class="btn btn-info">View</a>
-                            @if(auth()->user()->isAdmin) 
+                            @if(auth()->user()->isAdmin)
                                 <form action="{{ route('story.destroy', $story->id) }}" method="POST" class="delete-story-form d-inline">
                                     @csrf
                                     @method('DELETE')
@@ -101,6 +101,8 @@
             <p class="text-center">No stories found.</p>
         @endif
     </div>
+
+    @include('frontend.partials.footer')
 
     <!-- Bootstrap JS (with Popper.js for tooltips and popovers, CDN) -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

@@ -26,4 +26,8 @@
             </div>
         </div>
     </div>
+
+    <footer>
+        <p style="color: white; text-align: center;">&copy; 2024 Chandrasekar Sharushan - London Metropolitan University - ID No: 23057814</p>
+    </footer>
 </x-app-layout>

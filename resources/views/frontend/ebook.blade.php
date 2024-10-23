@@ -159,5 +159,7 @@
         </div>
     </div>
 
+    @include('frontend.partials.footer')
+
 </body>
 </html>
