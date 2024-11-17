@@ -9,13 +9,15 @@
 
     <!-- Bootstrap CSS (CDN) -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('css/footer.css') }}" rel="stylesheet">
 
     <!-- Custom Styles -->
     <style>
         body, html {
-            height: 100%;
-            margin: 0;
-            padding: 0;
+            height: 100%; /* Make sure body and html occupy the full viewport height */
+            margin: 0; /* Remove default margin */
+            display: flex; /* Use flexbox for layout */
+            flex-direction: column;
         }
 
         .background-image {
@@ -24,6 +26,7 @@
             background-position: center;
             background-repeat: no-repeat;
             min-height: 100vh; /* Ensure the background covers at least full viewport height */
+            flex: 1;
         }
 
         .container {
@@ -54,6 +57,9 @@
             text-align: center;
             font-style: italic;
             color: #999;
+        }
+        footer {
+            margin-top: auto; /* Push the footer to the bottom */
         }
     </style>
 </head>

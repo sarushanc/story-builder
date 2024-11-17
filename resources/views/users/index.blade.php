@@ -9,13 +9,15 @@
 
     <!-- Bootstrap CSS (CDN) -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('css/footer.css') }}" rel="stylesheet">
 
     <!-- Custom Styles -->
     <style>
-        body, html {
+         body, html {
             height: 100%;
             margin: 0;
-            padding: 0;
+            display: flex;
+            flex-direction: column;
         }
         .background-image {
             background-image: url('{{ asset('images/welcomeblank.png') }}');
@@ -23,13 +25,16 @@
             background-position: center;
             background-repeat: no-repeat;
             height: 100vh;
+            flex: 1;
         }
-
         .container {
             padding-top: 20px;
             background-color: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
             padding: 20px;
+        }
+        footer {
+            margin-top: auto; /* Push the footer to the bottom */
         }
     </style>
 </head>
@@ -107,7 +112,6 @@
                         </table>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>

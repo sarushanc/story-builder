@@ -19,11 +19,21 @@
             background: url('{{ asset('images/welcome.png') }}') no-repeat center center fixed;
             background-size: cover;
             color: white; /* To make the text stand out on a background */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Main content container */
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Container for welcome content */
         .welcome-container {
-            padding-top: 60px;
             text-align: center;
             background-color: rgba(0, 0, 0, 0.5); /* Add semi-transparent background */
             padding: 40px;
@@ -35,25 +45,31 @@
             margin-top: 20px;
         }
 
-        /* Image styles */
-        .welcome-image img {
-            max-width: 300px;
-            border-radius: 10px;
+        /* Footer styling */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
         }
     </style>
 </head>
 <body>
-    <div class="container welcome-container">
-        <h1>Welcome to Story Builder</h1>
-        <p>Collaboratively create, edit, and share your stories with the world. Let your creativity shine!</p>
+    <!-- Main content wrapper -->
+    <div class="content-wrapper">
+        <div class="container welcome-container">
+            <h1>Welcome to Story Builder</h1>
+            <p>Collaboratively create, edit, and share your stories with the world. Let your creativity shine!</p>
 
-        <!-- Button Group for Sign-Up and Log-In -->
-        <div class="welcome-btn-group">
-            <a href="{{ route('register') }}" class="btn btn-primary">Join Now</a>
-            <a href="{{ route('login') }}" class="btn btn-secondary">Log In</a>
+            <!-- Button Group for Sign-Up and Log-In -->
+            <div class="welcome-btn-group">
+                <a href="{{ route('register') }}" class="btn btn-primary">Join Now</a>
+                <a href="{{ route('login') }}" class="btn btn-secondary">Log In</a>
+            </div>
         </div>
     </div>
 
+    <!-- Footer at the bottom -->
     @include('frontend.partials.footer')
 
     <!-- Bootstrap JS and dependencies -->
