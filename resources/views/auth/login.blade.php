@@ -42,10 +42,23 @@
                         {{ __('Log in') }}
                     </x-primary-button>
                 </div>
+                <!-- Register and Home Links -->
+                <div class="flex items-center justify-end mt-4">
+                    <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('register') }}">
+                        {{ __('Don\'t have an account? Register here') }}
+                    </a>
+                </div>
+                <div class="flex items-center justify-end mt-2">
+                    <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="/">
+                        {{ __('Go to Homepage') }}
+                    </a>
+                </div>
             </form>
         </div>
 
         <!-- Footer -->
-        @include('frontend.partials.footer')
+        <div style="background-color: #343a40; color: #ffffff; padding: 20px 0; text-align: center; position: relative; width: 100%; margin-top: auto;">
+            @include('frontend.partials.footer')
+        </div>
     </div>
 </x-guest-layout>
